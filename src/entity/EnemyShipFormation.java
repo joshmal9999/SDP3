@@ -212,8 +212,9 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
                  enemyShip.getPositionY());
 
 		for(EnemyShip enemyShip : this.enemyShipsDivers) {
-			drawManager.drawEntity(enemyShip, enemyShip.getPositionX(),
-					enemyShip.getPositionY());
+			if (enemyShip != null)
+				drawManager.drawEntity(enemyShip, enemyShip.getPositionX(),
+			enemyShip.getPositionY());
 		}
 	}
 
@@ -228,8 +229,9 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 							enemyShip.getPositionY(), playerNumber);
 
         for(EnemyShip enemyShip : this.enemyShipsDivers) {
-            drawManager.drawEntity(enemyShip, enemyShip.getPositionX(),
-                    enemyShip.getPositionY(), playerNumber);
+			if (enemyShip != null)
+            	drawManager.drawEntity(enemyShip, enemyShip.getPositionX(),
+						enemyShip.getPositionY(), playerNumber);
         }
     }
 
@@ -306,17 +308,13 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 			// Cleans explosions.
 			List<EnemyShip> destroyed = new ArrayList<EnemyShip>();
-			for (List<EnemyShip> column : this.enemyShipsGrid) {
-				for (EnemyShip ship : column) {
-					if (ship != null && ship.isDestroyed()) {
-						destroyed.add(ship);
-						this.logger.info("Removed enemy "
-								+ column.indexOf(ship) + " from column "
-								+ this.enemyShipsGrid.indexOf(column));
+			for(int i = 0; i < this.enemyShipsGrid.size(); i++) {
+				for (int j = 0; j < this.enemyShipsGrid.get(i).size(); j++) {
+					if (this.enemyShipsGrid.get(i).get(j) != null && this.enemyShipsGrid.get(i).get(j).isDestroyed()) {
+						this.logger.info("Removed enemy " + j + " from column " + i);
+						this.enemyShipsGrid.get(i).set(j, null);
 					}
 				}
-				column.removeAll(destroyed);
-				destroyed = new ArrayList<EnemyShip>();
 			}
 
 			for (EnemyShip ship : this.enemyShipsDivers) {
@@ -330,6 +328,11 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 			for (List<EnemyShip> column : this.enemyShipsGrid)
 				for (EnemyShip enemyShip : column) {
+
+					if(enemyShip == null) {
+						continue;
+					}
+
 					enemyShip.move(movementX, movementY);
 					enemyShip.update();
 				}
@@ -461,21 +464,10 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private void adjustFormationBounds() {
 		int maxColumn = 0;
 		int minPositionY = Integer.MAX_VALUE;
-		for (List<EnemyShip> column : this.enemyShipsGrid) {
-			if (!column.isEmpty()) {
-				// Height of this column
-				int columnSize = column.get(column.size() - 1).positionY
-						- this.positionY + this.shipHeight;
-				maxColumn = Math.max(maxColumn, columnSize);
-				minPositionY = Math.min(minPositionY, column.get(0)
-						.getPositionY());
-			}
-		}
 
-		int leftMostPoint = 0;
-		int rightMostPoint = 0;
+		for (int i = 0; i < this.enemyShipsGrid.size(); i++) {
+			List<EnemyShip> column = this.enemyShipsGrid.get(i);
 
-		for (List<EnemyShip> column : this.enemyShipsGrid) {
 			// Check whether every ship is null
 			boolean allNull = column.stream().allMatch(Objects::isNull);
 
@@ -500,7 +492,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 				minPositionY = Math.min(minPositionY, firstNonNullShip.getPositionY());
 			}
 		}
-
+		int leftMostPoint = 0;
+		int rightMostPoint = 0;
 		for (List<EnemyShip> column : this.enemyShipsGrid) {
 			// Skip empty or all-null columns
 			if (!column.isEmpty()) {
@@ -523,12 +516,6 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 				}
 			}
 		}
-
-		this.width = rightMostPoint - leftMostPoint + this.shipWidth;
-		this.height = maxColumn;
-
-		this.positionX = leftMostPoint;
-		this.positionY = minPositionY;
 	}
 
 	/**
