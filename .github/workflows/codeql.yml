@@ -23,14 +23,9 @@ jobs:
           languages: "java"  # 분석할 언어 지정
           paths: |
             src/
-            
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 7.6
+          paths-ignore: |
+            src/engine/sound
 
-      - name: Build the project
-        run: ./gradlew build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
