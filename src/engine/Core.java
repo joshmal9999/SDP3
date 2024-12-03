@@ -220,6 +220,13 @@ public final class Core {
 				currentScreen = new ScoreScreen(GameSettingScreen.getName(winnerNumber), width, height, FPS, gameState, wallet, achievementManager, true);
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing score screen.");
+			case 9:
+				// Editor
+				currentScreen = new EditorScreen(width, height, FPS);
+				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+						+ " editor screen at " + FPS + " fps.");
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing editor screen.");
 				break;
 			default:
 				break;
