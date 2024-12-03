@@ -2056,4 +2056,21 @@ public final class DrawManager {
 
 		}
 	}
+
+    /**
+     * Draws the editor screen.
+     *
+     * @param screen
+     *            Screen to draw on.
+     */
+    public void drawEditor(final Screen screen) {
+        String editorTitle = "Editor Mode"; // 에디터 모드 타이틀
+
+        // 타이틀을 초록색으로 중앙에 그리기
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, editorTitle, screen.getHeight() / 4);
+
+        // 추가적인 에디터 화면 요소를 그릴 수 있습니다.
+        // 예를 들어, 사용자가 편집할 수 있는 요소나 도구 등을 그릴 수 있습니다.
+    }
 }
