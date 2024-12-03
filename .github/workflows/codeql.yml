@@ -25,7 +25,6 @@ jobs:
             src/
       - name: Build the project
         run: |
-          ./gradlew build # Gradle 사용 시
           mvn compile     # Maven 사용 시
 
       - name: Perform CodeQL Analysis
