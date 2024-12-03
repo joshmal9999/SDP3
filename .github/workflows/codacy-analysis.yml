@@ -1,0 +1,22 @@
+name: Codacy Analysis
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  codacy-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Codacy Analysis
+        run: |
+          docker run --rm \
+          -v "$(pwd)/src":/src \
+          codacy/codacy-analysis-cli analyze --project-token ${{ secrets.CODACY_PROJECT_TOKEN }}
