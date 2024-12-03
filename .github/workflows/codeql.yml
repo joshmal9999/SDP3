@@ -21,6 +21,8 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: "java"  # 분석할 언어 지정
+          paths: |
+            src/
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
