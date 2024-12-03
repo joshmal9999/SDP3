@@ -23,6 +23,10 @@ jobs:
           languages: "java"  # 분석할 언어 지정
           paths: |
             src/
+      - name: Build the project
+        run: |
+          ./gradlew build # Gradle 사용 시
+          mvn compile     # Maven 사용 시
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
