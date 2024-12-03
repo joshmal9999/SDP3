@@ -731,7 +731,7 @@ public final class DrawManager {
 		String achievementString = "ACHIEVEMENT";
 		String settingString = "SETTING";
 		String exitString = "EXIT";
-
+		String editorString = "EDITOR";
 
 		if (option == 6) /*option2 => Game Settings */
 			backBufferGraphics.setColor(Color.GREEN);
@@ -772,6 +772,13 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight()
 				/ 7 * 4 + fontRegularMetrics.getHeight() * 9);
+
+		if (option == 9) /*option9 => Editor */
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, editorString, screen.getHeight()
+				/ 7 * 4 + fontRegularMetrics.getHeight() * 11);
 	}
 
 
