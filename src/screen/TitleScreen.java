@@ -8,12 +8,8 @@ import engine.Sound;
 import engine.SoundManager;
 import entity.Wallet;
 
-
 /**
  * Implements the title screen.
- *
- * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
- *
  */
 public class TitleScreen extends Screen {
 
