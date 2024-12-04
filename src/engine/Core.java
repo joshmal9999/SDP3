@@ -228,6 +228,13 @@ public final class Core {
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing editor screen.");
 				break;
+			case 10:
+				// Playable Ship Editor
+				currentScreen = new PlayableShipEditor(width, height, FPS);
+				LOGGER.info("Starting Playable Ship Editor screen.");
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing Playable Ship Editor screen.");
+				break;
 			default:
 				break;
 			}
