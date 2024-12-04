@@ -1,0 +1,17 @@
+name: Qodana Analysis
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  qodana:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v2023.1
+        with:
+          linter: jetbrains/qodana-jvm
