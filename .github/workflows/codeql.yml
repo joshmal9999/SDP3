@@ -1,0 +1,36 @@
+name: "CodeQL Analysis"
+
+on:
+  push:
+    branches: [ "master" ]  # master 브랜치에 푸시될 때 실행
+  pull_request:
+    branches: [ "master" ]  # master 브랜치로 PR 생성 시 실행
+  schedule:
+    - cron: '0 1 * * 0'   # 매주 일요일 1시에 실행
+
+jobs:
+  analyze:
+    name: Analyze code with CodeQL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: "java"  # 분석할 언어 지정
+          paths: |
+            src/
+          paths-ignore: |
+            src/engine/sound
+
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        
+permissions:
+  contents: read
+  security-events: write
+
