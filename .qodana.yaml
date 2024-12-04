@@ -1,0 +1,7 @@
+version: "1.0"
+linter: jetbrains/qodana-jvm    # 자바 프로젝트용
+failThreshold: error            # 실패 기준
+checks:
+  - java
+  - kotlin
+  - xml
