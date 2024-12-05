@@ -20,6 +20,8 @@ import javax.imageio.ImageIO;
 import entity.*;
 import screen.GameSettingScreen;
 import screen.Screen;
+import entity.ShipType;
+import entity.Ship;
 
 /**
  * Manages screen drawing.
@@ -182,15 +184,11 @@ public final class DrawManager {
 			logger.info("Finished loading the sprites.");
 
 			// Font loading.
-			fontSmall = fileManager.loadFont(10f);
-			fontRegular = fileManager.loadFont(14f);
-			fontBig = fileManager.loadFont(24f);
+			loadFonts();
 			logger.info("Finished loading the fonts.");
 
 		} catch (IOException e) {
 			logger.warning("Loading failed.");
-		} catch (FontFormatException e) {
-			logger.warning("Font formating failed.");
 		}
 
 		/** Shop image load*/
@@ -242,8 +240,12 @@ public final class DrawManager {
 		backBufferGraphics = backBuffer.getGraphics();
 
 		backBufferGraphics.setColor(Color.BLACK);
-		backBufferGraphics
-				.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+		backBufferGraphics.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+
+		// 폰트가 null인지 확인
+		if (fontSmall == null || fontRegular == null || fontBig == null) {
+			loadFonts();
+		}
 
 		fontSmallMetrics = backBufferGraphics.getFontMetrics(fontSmall);
 		fontRegularMetrics = backBufferGraphics.getFontMetrics(fontRegular);
@@ -581,7 +583,7 @@ public final class DrawManager {
 	 * @param lives
 	 *            Current lives.
 	 */
-	public void drawLives(final Screen screen, final int lives, final Ship.ShipType shipType) {
+	public void drawLives(final Screen screen, final int lives, final ShipType shipType) {
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.setColor(Color.WHITE);
 		backBufferGraphics.drawString(Integer.toString(lives), 20, 25);
@@ -601,7 +603,7 @@ public final class DrawManager {
 	 * @param threadNumber
 	 *            Thread number for two player mode
 	 */
-	public void drawLives(final Screen screen, final int lives, final Ship.ShipType shipType, final int threadNumber) {
+	public void drawLives(final Screen screen, final int lives, final ShipType shipType, final int threadNumber) {
 		threadBufferGraphics[threadNumber].setFont(fontRegular);
 		threadBufferGraphics[threadNumber].setColor(Color.WHITE);
 		threadBufferGraphics[threadNumber].drawString(Integer.toString(lives), 20, 25);
@@ -1059,7 +1061,7 @@ public final class DrawManager {
 						screen.getHeight() / 2 + fontRegularMetrics.getHeight() * 2 + fontBigMetrics.getHeight() * 2);
 
 				backBufferGraphics.setColor(Color.WHITE);
-				String accuracyAchievement = String.format("             %d", maxCombo) + " =>" + "         10";
+				String accuracyAchievement = String.format("             %d", maxCombo) + " =>" + String.format("         %d", maxCombo <= 9 ? 10 : (((( (maxCombo - 10) / 5) + 1) * 5 ) + 10));
 				drawRightSideAchievementBigString(screen, accuracyAchievement,
 						screen.getHeight() / 2 + fontRegularMetrics.getHeight() * 5 + 5);
 			} else {
@@ -1460,6 +1462,8 @@ public final class DrawManager {
 		}
 
 
+
+
 		threadBufferGraphics[threadNumber].setFont(fontRegular);
 		threadBufferGraphics[threadNumber].setColor(Color.LIGHT_GRAY);
 		FontMetrics metrics = threadBufferGraphics[threadNumber].getFontMetrics(fontRegular);
@@ -1532,16 +1536,16 @@ public final class DrawManager {
 			int startAngle = 90;
 			int endAngle = 0;
 			switch(Core.BASE_SHIP){
-				case Ship.ShipType.VoidReaper:
+				case VoidReaper:
 					endAngle = 360 * (int)remainingTime / (int)(750 * 0.4);
 					break;
-				case Ship.ShipType.CosmicCruiser:
+				case CosmicCruiser:
 					endAngle = 360 * (int)remainingTime / (int)(750 * 1.6);
 					break;
-				case Ship.ShipType.StarDefender:
+				case StarDefender:
 					endAngle = 360 * (int)remainingTime / (int)(750 * 1.0);
 					break;
-				case Ship.ShipType.GalacticGuardian:
+				case GalacticGuardian:
 					endAngle = 360 * (int)remainingTime / (int)(750 * 1.2);
 					break;
 			}
@@ -1844,7 +1848,7 @@ public final class DrawManager {
 	 */
 	public void drawGameSettingElements(final Screen screen, final int selectedRow,
 										final boolean isMultiPlayer, final String name1, final String name2, final int difficultyLevel,
-										final Ship.ShipType shipType) {
+										final ShipType shipType) {
 		String spaceString = " ";
 		String player1String = "1 Player";
 		String player2String = "2 Player";
@@ -1877,7 +1881,7 @@ public final class DrawManager {
 		else backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, spaceString.repeat(60) + levelHardString, screen.getHeight() / 100 * 62);
 
-		Ship.ShipType[] shipTypes = Ship.ShipType.values();
+		ShipType[] shipTypes = ShipType.values();
 		int shipIndex = 0;
 		for (int i = 0; i < shipTypes.length; i++) {
 			if (shipTypes[i] == shipType) {
@@ -2071,6 +2075,34 @@ public final class DrawManager {
 		drawCenteredBigString(screen, editorTitle, screen.getHeight() / 4);
 
 		// 추가적인 에디터 화면 요소를 그릴 수 있습니다.
-		// 예를 들어, 사용자가 편집할 수 있는 요소나 도구 등을 그릴 수 있습니다.
+		// 예를 들어, 사용자가 편집할 수 ��는 요소나 도구 등을 그릴 수 있습니다.
+	}
+
+	public Graphics getBackBufferGraphics() {
+		return backBufferGraphics;
+	}
+
+	private void loadFonts() {
+		try {
+			fontSmall = fileManager.loadFont(10f);
+			fontRegular = fileManager.loadFont(14f);
+			fontBig = fileManager.loadFont(24f);
+		} catch (IOException | FontFormatException e) {
+			logger.warning("Font loading failed, using default fonts.");
+			fontSmall = new Font("Arial", Font.PLAIN, 10);
+			fontRegular = new Font("Arial", Font.PLAIN, 14);
+			fontBig = new Font("Arial", Font.PLAIN, 24);
+		}
+
+		// 기본 폰트 설정 확인
+		if (fontSmall == null) {
+			fontSmall = new Font("Arial", Font.PLAIN, 10);
+		}
+		if (fontRegular == null) {
+			fontRegular = new Font("Arial", Font.PLAIN, 14);
+		}
+		if (fontBig == null) {
+			fontBig = new Font("Arial", Font.PLAIN, 24);
+		}
 	}
 }

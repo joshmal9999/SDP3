@@ -4,7 +4,9 @@ import engine.Core;
 import engine.InputManager;
 import engine.SoundManager;
 import engine.Sound;
+import engine.Cooldown;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 /**
@@ -14,6 +16,15 @@ public class PlayableShipEditor extends Screen {
 
     /** Singleton instance of SoundManager */
     private final SoundManager soundManager = SoundManager.getInstance();
+    /** Canvas for editing the sprite. */
+    private boolean[][] canvas;
+    /** Pixel size for drawing. */
+    private static final int PIXEL_SIZE = 20;
+    /** Current selected pixel position. */
+    private int selectedX = 0;
+    private int selectedY = 0;
+    /** Cooldown for input to prevent rapid key presses. */
+    private final Cooldown inputCooldown = Core.getCooldown(200); // 200 milliseconds cooldown
 
     /**
      * Constructor, establishes the properties of the screen.
@@ -27,6 +38,7 @@ public class PlayableShipEditor extends Screen {
      */
     public PlayableShipEditor(final int width, final int height, final int fps) {
         super(width, height, fps);
+        this.canvas = new boolean[13][8];
     }
 
     /**
@@ -46,7 +58,29 @@ public class PlayableShipEditor extends Screen {
         super.update();
 
         draw();
-        if (this.inputDelay.checkFinished()) {
+        if (this.inputDelay.checkFinished() && this.inputCooldown.checkFinished()) {
+            if (inputManager.isKeyDown(KeyEvent.VK_UP)) {
+                selectedY = (selectedY - 1 + canvas[0].length) % canvas[0].length;
+                soundManager.playSound(Sound.MENU_MOVE);
+                inputCooldown.reset();
+            } else if (inputManager.isKeyDown(KeyEvent.VK_DOWN)) {
+                selectedY = (selectedY + 1) % canvas[0].length;
+                soundManager.playSound(Sound.MENU_MOVE);
+                inputCooldown.reset();
+            } else if (inputManager.isKeyDown(KeyEvent.VK_LEFT)) {
+                selectedX = (selectedX - 1 + canvas.length) % canvas.length;
+                soundManager.playSound(Sound.MENU_MOVE);
+                inputCooldown.reset();
+            } else if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
+                selectedX = (selectedX + 1) % canvas.length;
+                soundManager.playSound(Sound.MENU_MOVE);
+                inputCooldown.reset();
+            } else if (inputManager.isKeyDown(KeyEvent.VK_ENTER)) {
+                canvas[selectedX][selectedY] = !canvas[selectedX][selectedY]; // Toggle pixel color
+                soundManager.playSound(Sound.MENU_CLICK);
+                inputCooldown.reset();
+            }
+
             if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {
                 // Return to editor screen.
                 this.returnCode = 1;
@@ -65,6 +99,30 @@ public class PlayableShipEditor extends Screen {
         // Draw title
         drawManager.drawCenteredBigString(this, "Playable Ship Editor", getHeight() / 4);
 
+        // Draw canvas
+        drawCanvas();
+
         drawManager.completeDrawing(this);
     }
-}
+
+    /**
+     * Draws the canvas for sprite editing.
+     */
+    private void drawCanvas() {
+        int startX = (getWidth() - (canvas.length * PIXEL_SIZE)) / 2;
+        int startY = getHeight() / 2;
+
+        for (int x = 0; x < canvas.length; x++) {
+            for (int y = 0; y < canvas[x].length; y++) {
+                if (x == selectedX && y == selectedY) {
+                    drawManager.getBackBufferGraphics().setColor(Color.BLACK); // Highlight selected pixel
+                } else {
+                    drawManager.getBackBufferGraphics().setColor(canvas[x][y] ? Color.GREEN : Color.WHITE);
+                }
+                drawManager.getBackBufferGraphics().fillRect(startX + x * PIXEL_SIZE, startY + y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+                drawManager.getBackBufferGraphics().setColor(Color.GRAY);
+                drawManager.getBackBufferGraphics().drawRect(startX + x * PIXEL_SIZE, startY + y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+            }
+        }
+    }
+} 

@@ -68,7 +68,7 @@ public class GameScreen extends Screen implements Callable<GameState> {
 	/** tempScore records the score up to the previous level. */
 	private int tempScore;
 	/** Current ship type. */
-	private Ship.ShipType shipType;
+	private ShipType shipType;
 	/** Player lives left. */
 	private int lives;
 	/** Total bullets shot by the player. */

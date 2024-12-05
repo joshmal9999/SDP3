@@ -48,6 +48,13 @@ public class SoundManager {
         logger = Core.getLogger();
         logger.info("Started loading sound resources.");
 
+        // Headless 환경 감지
+        if (java.awt.GraphicsEnvironment.isHeadless()) {
+            logger.warning("Headless mode detected. Sound loading is disabled.");
+            soundEnabled = false;
+            return;
+        }
+
         soundClips = new HashMap<>();
         soundPools = new HashMap<>();
 
@@ -91,15 +98,9 @@ public class SoundManager {
             setVolume(currentVolume);
             logger.info("Finished loading all sounds.");
 
-        } catch (IOException e) {
+        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException | IllegalArgumentException e) {
             soundEnabled = false;
-            logger.warning("Loading failed: IO Exception");
-        } catch (UnsupportedAudioFileException e) {
-            soundEnabled = false;
-            logger.warning("Loading failed: Unsupported audio file.");
-        } catch (LineUnavailableException | IllegalArgumentException e) {
-            soundEnabled = false;
-            logger.warning("Loading failed: Sound device not found.");
+            logger.warning("Sound loading failed: " + e.getMessage());
         }
     }
 
