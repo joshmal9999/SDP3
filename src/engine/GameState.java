@@ -1,6 +1,7 @@
 package engine;
 
 import entity.Ship;
+import entity.ShipType;
 
 /**
  * Implements an object that stores the state of the game between levels.
@@ -14,7 +15,7 @@ public class GameState {
 	/** Current score. */
 	private int score;
 	/** Current ship type. */
-	private Ship.ShipType shipType;
+	private ShipType shipType;
 	/** Lives currently remaining. */
 	private int livesRemaining;
 	/** Bullets shot until now. */
@@ -61,7 +62,7 @@ public class GameState {
 	 *            Ships destroyed consequtive.
 	 */
 	public GameState(final int level, final int score,
-			final Ship.ShipType shipType,
+			final ShipType shipType,
 			final int livesRemaining, final int bulletsShot,
 			final int shipsDestroyed, final int elapsedTime, final String alertMessage, final int combo,
 					 final int maxCombo, final int prevTime, final int prevScore, final int hitBullets, final int difficulty) {
@@ -133,7 +134,7 @@ public class GameState {
 	/**
 	 * @return the shipType
 	 */
-	public final Ship.ShipType getShipType() {
+	public final ShipType getShipType() {
 		return shipType;
 	}
 

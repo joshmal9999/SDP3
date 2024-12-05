@@ -171,3 +171,21 @@ log*
 .checkstyle
 .idea/
 *.iml
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Gradle build directories
+/build/
+/app/build/
+/gradle/wrapper/
+
+# IDE settings
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -6,8 +6,10 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.awt.GraphicsEnvironment;
 
 import entity.Ship;
+import entity.ShipType;
 import entity.Wallet;
 import screen.*;
 
@@ -27,7 +29,7 @@ public final class Core {
 	private static final int FPS = 60;
 
 	/** Base ship type. */
-	public static Ship.ShipType BASE_SHIP = Ship.ShipType.StarDefender;
+	public static ShipType BASE_SHIP = ShipType.VoidReaper;
 	/** Max lives. */
 	public static int MAX_LIVES;
 	/** Levels between extra life. */
@@ -58,6 +60,11 @@ public final class Core {
 	 *            Program args, ignored.
 	 */
 	public static void main(final String[] args) throws IOException {
+
+		if (GraphicsEnvironment.isHeadless()) {
+			System.out.println("Running in headless mode. GUI is disabled.");
+			return;
+		}
 		try {
 			LOGGER.setUseParentHandlers(false);
 

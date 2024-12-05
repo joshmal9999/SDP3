@@ -6,6 +6,7 @@ import engine.GameSettings;
 import engine.InputManager;
 import engine.*;
 import entity.Ship;
+import entity.ShipType;
 
 import java.awt.event.KeyEvent;
 
@@ -36,7 +37,7 @@ public class GameSettingScreen extends Screen {
 	/** Selected row. */
 	private int selectedRow;
 	/** Ship type. */
-	private Ship.ShipType shipType;
+	private ShipType shipType;
 	/** Time between changes in user selection. */
 	private final Cooldown selectionCooldown;
 
@@ -55,9 +56,12 @@ public class GameSettingScreen extends Screen {
 	 *            Screen height.
 	 * @param fps
 	 *            Frames per second, frame rate at which the game is run.
+	 * @param shipType
+	 *            Current ship type.
 	 */
-	public GameSettingScreen(final int width, final int height, final int fps, final Ship.ShipType shipType) {
+	public GameSettingScreen(final int width, final int height, final int fps, final ShipType shipType) {
 		super(width, height, fps);
+		this.shipType = shipType;
 
 		// row 0: multiplayer
 		this.name1 = "P1";
@@ -148,7 +152,7 @@ public class GameSettingScreen extends Screen {
 				}
 			} else if (this.selectedRow == 2) {
 				if (inputManager.isKeyDown(KeyEvent.VK_LEFT) || inputManager.isKeyDown(KeyEvent.VK_RIGHT)) {
-					Ship.ShipType[] shipTypes = Ship.ShipType.values();
+					ShipType[] shipTypes = ShipType.values();
 					int index = 0;
 					for (int i = 0; i < shipTypes.length; i++) {
 						if (shipTypes[i] == this.shipType) {
@@ -212,7 +216,7 @@ public class GameSettingScreen extends Screen {
 	}
 	public static GameSettingScreen getInstance() {
 		if (instance == null) {
-			instance = new GameSettingScreen(0,0,0, Ship.ShipType.StarDefender);
+			instance = new GameSettingScreen(0,0,0, ShipType.StarDefender);
 		}
 		return instance;
 	}
