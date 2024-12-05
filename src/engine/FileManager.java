@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.Properties;
+import java.io.FileWriter;
 
 import engine.DrawManager.SpriteType;
 import entity.Wallet;
@@ -50,7 +51,7 @@ public final class FileManager {
 	 *
 	 * @return Shared instance of FileManager.
 	 */
-	protected static FileManager getInstance() {
+	public static FileManager getInstance() {
 		if (instance == null)
 			instance = new FileManager();
 		return instance;
@@ -444,6 +445,15 @@ public final class FileManager {
 		} finally {
 			if (bufferedWriter != null)
 				bufferedWriter.close();
+		}
+	}
+
+	public void saveShipGraphics(String shipName, String spriteData) throws IOException {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("res/graphics", true))) {
+			writer.write("# " + shipName);
+			writer.newLine();
+			writer.write(spriteData);
+			writer.newLine();
 		}
 	}
 
