@@ -178,7 +178,6 @@ log*
 # Gradle build directories
 /build/
 /app/build/
-/gradle/wrapper/
 
 # IDE settings
 .vscode/
