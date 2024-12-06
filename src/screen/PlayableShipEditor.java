@@ -165,8 +165,8 @@ public class PlayableShipEditor extends Screen {
     private void draw() {
         drawManager.initDrawing(this);
 
-        // Draw title
-        drawManager.drawCenteredBigString(this, "Playable Ship Editor", getHeight() / 2 + 40);
+        // Draw the title for custom playable ships
+        drawManager.drawPlayableShips(this);
 
         // Draw Canvas button above the canvas
         drawManager.drawCenteredRegularString(this, "Canvas", getHeight() / 4 + 100, selectedRow == 0);

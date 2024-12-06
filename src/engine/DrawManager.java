@@ -2105,4 +2105,16 @@ public final class DrawManager {
 			fontBig = new Font("Arial", Font.PLAIN, 24);
 		}
 	}
+
+    /**
+     * Draws the title for custom playable ships.
+     *
+     * @param screen
+     *            Screen to draw on.
+     */
+    public void drawPlayableShips(final Screen screen) {
+        String editorTitle = "Custom Playable Ships";
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, editorTitle, screen.getHeight() / 4);
+    }
 }
