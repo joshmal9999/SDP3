@@ -15,9 +15,13 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.Properties;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import engine.DrawManager.SpriteType;
 import entity.Wallet;
@@ -50,7 +54,7 @@ public final class FileManager {
 	 *
 	 * @return Shared instance of FileManager.
 	 */
-	protected static FileManager getInstance() {
+	public static FileManager getInstance() {
 		if (instance == null)
 			instance = new FileManager();
 		return instance;
@@ -270,7 +274,7 @@ public final class FileManager {
 	}
 
 
-	public List<String> loadCreditList() throws IOException {  // 사용자의 크레딧 파일을 로드
+	public List<String> loadCreditList() throws IOException {  // 사자의 크레딧 파일을 로드
 
 		List<String> creditname = new ArrayList<String>();
 		InputStream inputStream = null;
@@ -445,6 +449,75 @@ public final class FileManager {
 			if (bufferedWriter != null)
 				bufferedWriter.close();
 		}
+	}
+
+	public void saveShipGraphics(String shipName, String spriteData) throws IOException {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("res/graphics", true))) {
+			writer.newLine();
+			writer.write("# " + shipName);
+			writer.newLine();
+			writer.write(spriteData);
+		}
+	}
+
+	/**
+	 * Loads the graphics file for reading.
+	 *
+	 * @return BufferedReader to read the graphics file.
+	 * @throws IOException In case of loading problems.
+	 */
+	public BufferedReader loadGraphics() throws IOException {
+		String graphicsPath = "res/graphics";
+		FileInputStream fileInputStream = new FileInputStream(graphicsPath);
+		return new BufferedReader(new InputStreamReader(fileInputStream, StandardCharsets.UTF_8));
+	}
+
+	public void updateShipGraphics(String shipName, String spriteData) throws IOException {
+		List<String> lines = Files.readAllLines(Paths.get("res/graphics"), StandardCharsets.UTF_8);
+		boolean found = false;
+
+		for (int i = 0; i < lines.size(); i++) {
+			if (lines.get(i).startsWith("# " + shipName)) {
+				lines.set(i + 1, spriteData); // Update the sprite data
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			// If not found, append new data
+			lines.add("# " + shipName);
+			lines.add(spriteData);
+		}
+
+		Files.write(Paths.get("res/graphics"), lines, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Loads the custom ship sprite from the graphics file.
+	 *
+	 * @return 2D boolean array representing the custom ship sprite.
+	 * @throws IOException In case of loading problems.
+	 */
+	public boolean[][] loadCustomShip() throws IOException {
+		boolean[][] customShipSprite = new boolean[13][8];
+		try (BufferedReader reader = loadGraphics()) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("# CustomShip")) {
+					line = reader.readLine(); // Read the actual sprite data
+					if (line != null) {
+						for (int i = 0; i < customShipSprite.length; i++) {
+							for (int j = 0; j < customShipSprite[i].length; j++) {
+								customShipSprite[i][j] = line.charAt(i * customShipSprite[i].length + j) == '1';
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+		return customShipSprite;
 	}
 
 }

@@ -73,6 +73,8 @@ public final class DrawManager {
 	private static BufferedImage img_coingain;
 	private static BufferedImage img_shotinterval;
 
+	/** Custom ship sprite. */
+	private boolean[][] customShipSprite;
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -179,6 +181,9 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipE2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipF1, new boolean[16][7]);
 			spriteMap.put(SpriteType.EnemyShipF2, new boolean[16][7]);
+
+			// CustomShip 로드
+			customShipSprite = fileManager.loadCustomShip();
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
@@ -2103,6 +2108,41 @@ public final class DrawManager {
 		}
 		if (fontBig == null) {
 			fontBig = new Font("Arial", Font.PLAIN, 24);
+		}
+	}
+
+    /**
+     * Draws the title for custom playable ships.
+     *
+     * @param screen
+     *            Screen to draw on.
+     */
+    public void drawPlayableShips(final Screen screen) {
+        String editorTitle = "Custom Playable Ships";
+        backBufferGraphics.setColor(Color.GREEN);
+        drawCenteredBigString(screen, editorTitle, screen.getHeight() / 4);
+    }
+
+	/**
+	 * Draws the custom ship.
+	 *
+	 * @param screen
+	 *            Screen to draw on.
+	 * @param positionX
+	 *            X coordinate.
+	 * @param positionY
+	 *            Y coordinate.
+	 */
+	public void drawCustomShip(final Screen screen, final int positionX, final int positionY) {
+		if (customShipSprite != null) {
+			for (int i = 0; i < customShipSprite.length; i++) {
+				for (int j = 0; j < customShipSprite[i].length; j++) {
+					if (customShipSprite[i][j]) {
+						backBufferGraphics.setColor(Color.GREEN);
+						backBufferGraphics.fillRect(positionX + i * 2, positionY + j * 2, 2, 2);
+					}
+				}
+			}
 		}
 	}
 }
