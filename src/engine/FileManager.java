@@ -493,4 +493,31 @@ public final class FileManager {
 		Files.write(Paths.get("res/graphics"), lines, StandardCharsets.UTF_8);
 	}
 
+	/**
+	 * Loads the custom ship sprite from the graphics file.
+	 *
+	 * @return 2D boolean array representing the custom ship sprite.
+	 * @throws IOException In case of loading problems.
+	 */
+	public boolean[][] loadCustomShip() throws IOException {
+		boolean[][] customShipSprite = new boolean[13][8];
+		try (BufferedReader reader = loadGraphics()) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("# CustomShip")) {
+					line = reader.readLine(); // Read the actual sprite data
+					if (line != null) {
+						for (int i = 0; i < customShipSprite.length; i++) {
+							for (int j = 0; j < customShipSprite[i].length; j++) {
+								customShipSprite[i][j] = line.charAt(i * customShipSprite[i].length + j) == '1';
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+		return customShipSprite;
+	}
+
 }
