@@ -9,7 +9,9 @@ import engine.FileManager;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Implements the playable ship editor screen.
@@ -40,6 +42,9 @@ public class PlayableShipEditor extends Screen {
     /** Flag to indicate if in button selection mode. */
     private boolean inButtonMode = false;
 
+    /** Logger for logging messages */
+    private static final Logger logger = Core.getLogger();
+
     /**
      * Constructor, establishes the properties of the screen.
      *
@@ -56,6 +61,32 @@ public class PlayableShipEditor extends Screen {
         this.selectedRow = 0; // Start with Canvas selected
         this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
         this.selectionCooldown.reset();
+        loadCustomShip(); // Load custom ship data on initialization
+    }
+
+    /**
+     * Loads the custom ship data from the graphics file.
+     */
+    private void loadCustomShip() {
+        try (BufferedReader reader = FileManager.getInstance().loadGraphics()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("# CustomShip")) {
+                    line = reader.readLine(); // Read the actual sprite data
+                    if (line != null) {
+                        for (int i = 0; i < canvas.length; i++) {
+                            for (int j = 0; j < canvas[i].length; j++) {
+                                canvas[i][j] = line.charAt(i * canvas[i].length + j) == '1';
+                            }
+                        }
+                        logger.info("Loading custom ship.");
+                    }
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -215,7 +246,7 @@ public class PlayableShipEditor extends Screen {
             }
         }
         try {
-            FileManager.getInstance().saveShipGraphics("CustomShip", spriteData.toString());
+            FileManager.getInstance().updateShipGraphics("CustomShip", spriteData.toString());
             System.out.println("Sprite data saved successfully.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -233,4 +264,4 @@ public class PlayableShipEditor extends Screen {
         }
         System.out.println("Canvas cleared.");
     }
-} 
+}
