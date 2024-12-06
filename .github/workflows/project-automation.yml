@@ -1,0 +1,32 @@
+name: Auto Add Issues to Project Board
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add issue to project
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const projectOwner = 'joshmal9999'; // 사용자 또는 조직 이름
+            const projectNumber = 3; // 프로젝트 번호, 아래 참고
+            const issueNodeId = context.payload.issue.node_id;
+
+            const query = `
+              mutation {
+                addProjectNextItem(input: {projectId: "${projectOwner}-${projectNumber}", contentId: "${issueNodeId}"}) {
+                  projectNextItem {
+                    id
+                  }
+                }
+              }
+            `;
+
+            const result = await github.graphql(query, {
+              headers: { 'GraphQL-Features': 'projects_next' },
+            });
+            console.log('Issue added to project:', result);
