@@ -2145,4 +2145,21 @@ public final class DrawManager {
 			}
 		}
 	}
+	public void drawCanvas(final Screen screen, final boolean[][] canvas, final int selectedX, final int selectedY, final int pixelSize) {
+        int startX = (screen.getWidth() - (canvas.length * pixelSize)) / 2;
+        int startY = screen.getHeight() / 2;
+
+        for (int x = 0; x < canvas.length; x++) {
+            for (int y = 0; y < canvas[x].length; y++) {
+                if (x == selectedX && y == selectedY) {
+                    backBufferGraphics.setColor(Color.BLACK); // Highlight selected pixel
+                } else {
+                    backBufferGraphics.setColor(canvas[x][y] ? Color.GREEN : Color.WHITE);
+                }
+                backBufferGraphics.fillRect(startX + x * pixelSize, startY + y * pixelSize, pixelSize, pixelSize);
+                backBufferGraphics.setColor(Color.GRAY);
+                backBufferGraphics.drawRect(startX + x * pixelSize, startY + y * pixelSize, pixelSize, pixelSize);
+            }
+        }
+    }
 }
