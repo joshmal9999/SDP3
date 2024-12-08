@@ -51,13 +51,22 @@ jobs:
             -d '{
               "model": "gpt-4",
               "messages": [
-                {"role": "system", "content": "You are a Java developer. Generate JUnit 5 test code."},
+                {"role": "system", "content": "You are a Java developer. Generate only valid JUnit 5 test code. Do not include any explanations or additional text."},
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
-          echo "Response: $RESPONSE" >> debug-response.json
-          echo "$RESPONSE" | jq -r '.choices[0].message.content' >> app/src/test/java/org/example/AppTest.java
+          echo "Full response: $RESPONSE" >> debug-response.json
+          TEST_CODE=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          echo "Extracted test code: $TEST_CODE" >> debug-response.json
+    
+          # 유효성 검사
+          if [ -z "$TEST_CODE" ] || [ "$TEST_CODE" == "null" ]; then
+            echo "Error: Invalid test code for method: $METHOD" >> debug-response.json
+          else
+            echo "$TEST_CODE" >> app/src/test/java/org/example/AppTest.java
+          fi
         done < changed-methods.txt
+
 
     - name: Run generated tests
       run: |
