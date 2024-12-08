@@ -41,6 +41,7 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
+        echo "[]" > debug-response.json
         while IFS= read -r METHOD; do
           echo "Generating test for: $METHOD"
           RESPONSE=$(curl -s -X POST https://api.openai.com/v1/chat/completions \
@@ -53,7 +54,17 @@ jobs:
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
-          echo "$RESPONSE" >> generated-tests.java
+          
+          # 디버깅 파일에 API 응답 추가
+          echo "Response for method $METHOD: $RESPONSE" >> debug-response.json
+          
+          # 유효성 검사 후 저장
+          TEST_CODE=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          if [ -z "$TEST_CODE" ] || [ "$TEST_CODE" == "null" ]; then
+            echo "Invalid response for $METHOD" >> debug-response.json
+          else
+            echo "$TEST_CODE" >> app/src/test/java/org/example/AppTest.java
+          fi
         done < changed-methods.txt
 
     - name: Run generated tests
@@ -62,5 +73,16 @@ jobs:
         ./gradlew test
 
     - name: Print debug-response.json
-      run: cat debug-response.json
+      run: |
+        if [ -f debug-response.json ]; then
+          echo "Debug response file content:"
+          cat debug-response.json
+        else
+          echo "Debug response file not found."
+        fi
 
+    - name: Upload debug-response.json
+      uses: actions/upload-artifact@v3
+      with:
+        name: debug-response
+        path: debug-response.json
