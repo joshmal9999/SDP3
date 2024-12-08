@@ -60,3 +60,7 @@ jobs:
       run: |
         echo "Running tests..."
         ./gradlew test
+
+    - name: Print debug-response.json
+      run: cat debug-response.json
+
