@@ -53,7 +53,8 @@ jobs:
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
-          echo "$RESPONSE" >> generated-tests.java
+          # Save generated test code directly to AppTest.java
+          echo "$RESPONSE" | jq -r '.choices[0].message.content' > app/src/test/java/org/example/AppTest.java
         done < changed-methods.txt
 
     - name: Run generated tests
