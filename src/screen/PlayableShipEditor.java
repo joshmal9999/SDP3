@@ -202,8 +202,8 @@ public class PlayableShipEditor extends Screen {
         // Draw Canvas button above the canvas
         drawManager.drawCenteredRegularString(this, "Canvas", getHeight() / 4 + 100, selectedRow == 0);
 
-        // Draw canvas
-        drawCanvas();
+        // Draw canvas using DrawManager
+        drawManager.drawCanvas(this, canvas, selectedX, selectedY, PIXEL_SIZE);
 
         // Draw Save and Clear buttons below the canvas
         String[] options = {"Save", "Clear"};
@@ -212,27 +212,6 @@ public class PlayableShipEditor extends Screen {
         }
 
         drawManager.completeDrawing(this);
-    }
-
-    /**
-     * Draws the canvas for sprite editing.
-     */
-    private void drawCanvas() {
-        int startX = (getWidth() - (canvas.length * PIXEL_SIZE)) / 2;
-        int startY = getHeight() / 2;
-
-        for (int x = 0; x < canvas.length; x++) {
-            for (int y = 0; y < canvas[x].length; y++) {
-                if (x == selectedX && y == selectedY) {
-                    drawManager.getBackBufferGraphics().setColor(Color.BLACK); // Highlight selected pixel
-                } else {
-                    drawManager.getBackBufferGraphics().setColor(canvas[x][y] ? Color.GREEN : Color.WHITE);
-                }
-                drawManager.getBackBufferGraphics().fillRect(startX + x * PIXEL_SIZE, startY + y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
-                drawManager.getBackBufferGraphics().setColor(Color.GRAY);
-                drawManager.getBackBufferGraphics().drawRect(startX + x * PIXEL_SIZE, startY + y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
-            }
-        }
     }
 
     /**
