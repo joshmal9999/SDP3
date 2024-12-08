@@ -1,0 +1,40 @@
+name: PR Test Workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Pull request에서 코드 가져오기
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. 변경된 파일만 추출
+    - name: Get changed files
+      id: changes
+      run: |
+        git fetch origin ${{ github.base_ref }} --depth=1
+        git diff --name-only origin/${{ github.base_ref }} > changed-files.txt
+
+    # 3. Java 변경된 파일이 있는지 확인
+    - name: Filter changed Java files
+      id: java_changes
+      run: |
+        grep '\.java$' changed-files.txt > changed-java-files.txt || true
+        echo "Changed Java files:"
+        cat changed-java-files.txt
+      continue-on-error: true
+
+    # 4. JUnit 테스트 실행 (변경된 Java 파일에서만 테스트)
+    - name: Run JUnit tests for changed files
+      if: ${{ steps.java_changes.outcome == 'success' }}
+      run: |
+        TEST_FILES=$(cat changed-java-files.txt | xargs -I {} find . -name "{}" | xargs -I {} dirname {})
+        echo "Running tests for the following directories:"
+        echo $TEST_FILES
+        ./gradlew test --tests "*.*" --tests $(echo $TEST_FILES | tr '\n' ' ')
