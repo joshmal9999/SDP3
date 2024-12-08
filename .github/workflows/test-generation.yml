@@ -32,10 +32,12 @@ jobs:
         CHANGED_FILES=$(cat changed-files.txt | grep '\.java$')
         for FILE in $CHANGED_FILES; do
           echo "Processing $FILE"
-          git diff origin/${{ github.base_ref }} -- $FILE | grep '^\+' | grep 'public ' >> changed-methods.txt || true
+          git diff origin/${{ github.base_ref }} -- $FILE \
+            | grep -E '^\+.*(public|protected|private|default).*\(.*\)\s*{' \
+            | sed 's/^+//g' >> changed-methods.txt || true
         done
         cat changed-methods.txt
-
+    
     - name: Generate test code using ChatGPT API
       id: generate_tests
       env:
@@ -53,8 +55,8 @@ jobs:
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
-          # Save generated test code directly to AppTest.java
-          echo "$RESPONSE" | jq -r '.choices[0].message.content' > app/src/test/java/org/example/AppTest.java
+          # Append generated test code to AppTest.java
+          echo "$RESPONSE" | jq -r '.choices[0].message.content' >> app/src/test/java/org/example/AppTest.java
         done < changed-methods.txt
 
     - name: Run generated tests
