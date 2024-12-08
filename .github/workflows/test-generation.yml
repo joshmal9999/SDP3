@@ -51,7 +51,7 @@ jobs:
             -d '{
               "model": "gpt-4",
               "messages": [
-                {"role": "system", "content": "You are a Java developer. Generate JUnit 5 test code."},
+                {"role": "system", "content": "You are a Java developer. Generate JUnit 5 test code. Do not include any explanations or additional text."},
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
