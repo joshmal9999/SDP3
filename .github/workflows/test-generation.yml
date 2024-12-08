@@ -51,11 +51,11 @@ jobs:
             -d '{
               "model": "gpt-4",
               "messages": [
-                {"role": "system", "content": "You are a Java developer. Generate JUnit 5 test code. Do not include any explanations or additional text."},
+                {"role": "system", "content": "You are a Java developer. Generate JUnit 5 test code."},
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
-          # Append generated test code to AppTest.java
+          echo "Response: $RESPONSE" >> debug-response.json
           echo "$RESPONSE" | jq -r '.choices[0].message.content' >> app/src/test/java/org/example/AppTest.java
         done < changed-methods.txt
 
