@@ -7,5 +7,6 @@ public enum ShipType {
     VoidReaper,
     CosmicCruiser,
     StarDefender,
-    GalacticGuardian
+    GalacticGuardian,
+    CustomShip
 } 
