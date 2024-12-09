@@ -1,0 +1,83 @@
+name: Generate and Run JUnit Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  generate-and-run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the PR Branch
+    - name: Checkout Pull Request Branch
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    # Step 2: Fetch Main Branch
+    - name: Fetch Main Branch
+      run: git fetch origin main
+
+    # Step 3: Get Changed Java Files
+    - name: Get Changed Files
+      id: changed_files
+      run: |
+        git diff --name-only origin/main...HEAD > changed-files.txt
+        cat changed-files.txt
+
+    # Step 4: Extract Changed Methods
+    - name: Extract Changed Methods
+      id: changed_methods
+      run: |
+        CHANGED_FILES=$(cat changed-files.txt | grep '\.java$')
+        for FILE in $CHANGED_FILES; do
+          echo "Processing $FILE"
+          git diff origin/main...HEAD -- $FILE | grep '^\+' | grep 'public ' >> changed-methods.txt || true
+        done
+        cat changed-methods.txt
+
+    # Step 5: Generate JUnit Test Code with ChatGPT API
+    - name: Generate Test Code using ChatGPT API
+      id: generate_tests
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        echo "[]" > debug-response.json
+        echo "" > generated-tests.java
+        while IFS= read -r METHOD; do
+          echo "Generating test for: $METHOD"
+          RESPONSE=$(curl -s -X POST https://api.openai.com/v1/chat/completions \
+            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "gpt-4",
+              "messages": [
+                {"role": "system", "content": "You are a Java developer. Generate a JUnit 5 test case."},
+                {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
+              ]
+            }')
+          
+          # Extract test code and append to test file
+          TEST_CODE=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          if [ -z "$TEST_CODE" ] || [ "$TEST_CODE" == "null" ]; then
+            echo "Invalid response for $METHOD" >> debug-response.json
+          else
+            echo "$TEST_CODE" >> app/src/test/java/org/example/AppTest.java
+          fi
+        done < changed-methods.txt
+
+    # Step 6: Run the Generated Tests
+    - name: Run JUnit Tests
+      run: |
+        echo "Running generated tests..."
+        ./gradlew test
+
+    # Step 7: Upload Debug Responses
+    - name: Upload Debug Response
+      uses: actions/upload-artifact@v3
+      with:
+        name: debug-response
+        path: debug-response.json
