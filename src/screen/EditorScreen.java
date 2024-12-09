@@ -76,7 +76,7 @@ public class EditorScreen extends Screen {
                     this.isRunning = false;
                 } else if (this.selectedRow == 1) {
                     // Enemy Ship Features
-                    drawManager.drawCenteredBigString(this, "Enemy Ship Features", getHeight() / 2);
+                    logger.info("Selected Enemy Ship Features");
                 }
                 this.selectionCooldown.reset();
                 soundManager.playSound(Sound.MENU_CLICK);
