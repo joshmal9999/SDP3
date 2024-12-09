@@ -1,0 +1,47 @@
+name: ChatGPT Code Review
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Extract PR Diff
+      - name: Get Pull Request Diff
+        run: git diff origin/main...HEAD > pr_diff.txt
+
+      # Step 3: Install Dependencies
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      # Step 4: Call ChatGPT API
+      - name: Generate Review Suggestions
+        id: chatgpt_review
+        run: |
+          DIFF=$(cat pr_diff.txt)
+          RESPONSE=$(curl -s -X POST https://api.openai.com/v1/completions \
+            -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "text-davinci-003",
+              "prompt": "Provide a code review for the following diff:\n\n'"$DIFF"'",
+              "max_tokens": 500
+            }')
+          echo "response=$RESPONSE" | jq -r '.choices[0].text' > review_suggestions.txt
+
+      # Step 5: Post Review Suggestions to PR
+      - name: Post Review Comments
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            ## ChatGPT Code Review Suggestions
+            $(cat review_suggestions.txt)
