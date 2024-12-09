@@ -107,24 +107,6 @@ public class EditorScreen extends Screen {
 
         drawManager.completeDrawing(this);
     }
-
-    /**
-     * Determines if a given year is a leap year.
-     *
-     * @param year The year to check.
-     * @return True if the year is a leap year, false otherwise.
-     */
-    public boolean isLeapYear(int year) {
-        if (year % 4 == 0) {
-            if (year % 100 == 0) {
-                return year % 400 == 0;
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Determines if a given string is a palindrome.
      *
@@ -142,5 +124,22 @@ public class EditorScreen extends Screen {
             right--;
         }
         return true;
+    }
+
+    /**
+     * Determines if a given year is a leap year.
+     *
+     * @param year The year to check.
+     * @return True if the year is a leap year, false otherwise.
+     */
+    public boolean isLeapYear(int year) {
+        if (year % 4 == 0) {
+            if (year % 100 == 0) {
+                return year % 400 == 0;
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }
