@@ -8,43 +8,44 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout Pull Request Branch
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
+    - name: Checkout Pull Request Branch
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.ref }}
 
-      # Step 2: Extract PR Diff
-      - name: Get Pull Request Diff
-        run: git diff origin/master...HEAD > pr_diff.txt
+    - name: Fetch Master Branch
+      run: git fetch origin master
 
-      # Step 3: Install Dependencies
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq curl
+    - name: Get Pull Request Diff
+      run: |
+        git diff origin/master...HEAD > pr_diff.txt
+        cat pr_diff.txt
 
-      # Step 4: Call ChatGPT API
-      - name: Generate Review Suggestions
-        id: chatgpt_review
-        run: |
-          DIFF=$(cat pr_diff.txt)
-          RESPONSE=$(curl -s -X POST https://api.openai.com/v1/completions \
-            -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "model": "text-davinci-003",
-              "prompt": "Provide a code review for the following diff:\n\n'"$DIFF"'",
-              "max_tokens": 500
-            }')
-          echo "response=$RESPONSE" | jq -r '.choices[0].text' > review_suggestions.txt
+    - name: Generate Review Suggestions
+      id: chatgpt_review
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        DIFF=$(cat pr_diff.txt)
+        RESPONSE=$(curl -s -X POST https://api.openai.com/v1/chat/completions \
+          -H "Authorization: Bearer $OPENAI_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "model": "gpt-4",
+            "messages": [
+              {"role": "system", "content": "You are a code reviewer. Analyze the following code diff and provide detailed feedback."},
+              {"role": "user", "content": "Review this code diff:\n\n'"$DIFF"'"}
+            ]
+          }')
+        echo "$RESPONSE" > review_suggestions.json
+        cat review_suggestions.json
 
-      # Step 5: Post Review Suggestions to PR
-      - name: Post Review Comments
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          message: |
-            ## ChatGPT Code Review Suggestions
-            $(cat review_suggestions.txt)
+    - name: Post Review Comments
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        message: |
+          ## ChatGPT Code Review Suggestions
+          $(cat review_suggestions.json)
