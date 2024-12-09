@@ -107,4 +107,40 @@ public class EditorScreen extends Screen {
 
         drawManager.completeDrawing(this);
     }
+
+    /**
+     * Determines if a given year is a leap year.
+     *
+     * @param year The year to check.
+     * @return True if the year is a leap year, false otherwise.
+     */
+    public boolean isLeapYear(int year) {
+        if (year % 4 == 0) {
+            if (year % 100 == 0) {
+                return year % 400 == 0;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines if a given string is a palindrome.
+     *
+     * @param text The string to check.
+     * @return True if the string is a palindrome, false otherwise.
+     */
+    public boolean isPalindrome(String text) {
+        int left = 0;
+        int right = text.length() - 1;
+        while (left < right) {
+            if (text.charAt(left) != text.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
 }
