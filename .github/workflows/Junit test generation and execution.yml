@@ -3,7 +3,7 @@ name: Generate and Run JUnit Tests
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   generate-and-run-tests:
