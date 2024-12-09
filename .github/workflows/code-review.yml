@@ -1,0 +1,61 @@
+name: Code Review Workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Run Linting
+      - name: Run Linter
+        run: |
+          npm install eslint
+          npx eslint . --ext .js,.jsx,.ts,.tsx
+
+      # Step 3: Run Tests
+      - name: Run Tests
+        run: |
+          npm install
+          npm test
+
+      # Step 4: Post Lint and Test Results
+      - name: Label PR Based on Results
+        if: ${{ failure() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['needs-fix', 'high-risk']
+            })
+
+      - name: Label PR as Ready
+        if: ${{ success() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['ready-for-merge']
+            })
+
+      # Step 5: Copilot Review Suggestions
+      - name: Copilot Review Suggestions
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"input": "Provide code improvements and suggestions for this PR."}' \
+            https://api.github.com/copilot/review-suggestions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
