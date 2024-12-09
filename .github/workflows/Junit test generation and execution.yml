@@ -53,9 +53,9 @@ jobs:
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d '{
-              "model": "gpt-4",
+              "model": "gpt-3.5-turbo",
               "messages": [
-                {"role": "system", "content": "You are a Java developer. Generate a comprehensive JUnit 5 test case."},
+                {"role": "system", "content": "You are a Java developer. Generate a JUnit 5 test case."},
                 {"role": "user", "content": "Write a JUnit test for the following method:\n\n'"$METHOD"'\n\nEnsure the test includes edge case coverage and multiple assertions."}
               ]
             }')
@@ -71,6 +71,7 @@ jobs:
             echo "$TEST_CODE" >> app/src/test/java/org/example/AppTest.java
           fi
         done < changed-methods.txt
+
 
 
     # Step 6: Run the Generated Tests
