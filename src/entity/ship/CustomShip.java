@@ -3,8 +3,11 @@ package entity.ship;
 import engine.DrawManager;
 import entity.Ship;
 import entity.ShipMultipliers;
-import entity.ShipType;
 
+/**
+ * Custom ship controlled by the player.
+ * It can have special abilities or properties.
+ */
 public class CustomShip extends Ship {
 
     public CustomShip(final int positionX, final int positionY) {
