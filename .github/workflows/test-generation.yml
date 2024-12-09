@@ -48,16 +48,16 @@ jobs:
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d '{
-              "model": "gpt-4",
+              "model": "gpt-3.5-turbo",
               "messages": [
                 {"role": "system", "content": "You are a Java developer. Generate JUnit 5 test code."},
                 {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
               ]
             }')
-          
-          # 디버깅 파일에 API 응답 추가
-          echo "Response for method $METHOD: $RESPONSE" >> debug-response.json
-          
+    
+          # 디버깅용 Raw 응답 출력
+          echo "Raw response for method $METHOD: $RESPONSE" >> debug-response.json
+    
           # 유효성 검사 후 저장
           TEST_CODE=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           if [ -z "$TEST_CODE" ] || [ "$TEST_CODE" == "null" ]; then
@@ -67,22 +67,3 @@ jobs:
           fi
         done < changed-methods.txt
 
-    - name: Run generated tests
-      run: |
-        echo "Running tests..."
-        ./gradlew test
-
-    - name: Print debug-response.json
-      run: |
-        if [ -f debug-response.json ]; then
-          echo "Debug response file content:"
-          cat debug-response.json
-        else
-          echo "Debug response file not found."
-        fi
-
-    - name: Upload debug-response.json
-      uses: actions/upload-artifact@v3
-      with:
-        name: debug-response
-        path: debug-response.json
