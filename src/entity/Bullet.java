@@ -65,6 +65,9 @@ public class Bullet extends Entity {
 				case StarDefender:
 					this.spriteType = SpriteType.BulletType3;
 					break;
+				case CustomShip:
+					this.spriteType = SpriteType.BulletType3;
+					break;
 				case GalacticGuardian:
 					this.spriteType = SpriteType.BulletType4;
 					break;

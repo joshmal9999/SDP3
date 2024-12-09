@@ -137,7 +137,8 @@ public final class DrawManager {
 		/** Diver enemy ship - first form. */
 		EnemyShipF1,
 		/** Diver enemy ship - first form. */
-		EnemyShipF2
+		EnemyShipF2,
+		CustomShip // CustomShip 추가
 	};
 
 	/**
@@ -182,8 +183,8 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipF1, new boolean[16][7]);
 			spriteMap.put(SpriteType.EnemyShipF2, new boolean[16][7]);
 
-			// CustomShip 로드
-			customShipSprite = fileManager.loadCustomShip();
+			// CustomShip 스프라이트 초기화
+			spriteMap.put(SpriteType.CustomShip, new boolean[13][8]);
 
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");

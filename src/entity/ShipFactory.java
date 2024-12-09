@@ -20,6 +20,7 @@ public class ShipFactory {
             case VoidReaper -> new VoidReaper(positionX, positionY);
             case GalacticGuardian -> new GalacticGuardian(positionX, positionY);
             case CosmicCruiser -> new CosmicCruiser(positionX, positionY);
+            case CustomShip -> new CustomShip(positionX, positionY);
         };
     }
 }
