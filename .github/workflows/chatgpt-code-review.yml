@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout the code
-      - name: Checkout Code
+      - name: Checkout Pull Request Branch
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
 
       # Step 2: Extract PR Diff
       - name: Get Pull Request Diff
