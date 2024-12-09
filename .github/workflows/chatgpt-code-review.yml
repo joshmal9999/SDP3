@@ -18,7 +18,7 @@ jobs:
 
       # Step 2: Extract PR Diff
       - name: Get Pull Request Diff
-        run: git diff origin/main...HEAD > pr_diff.txt
+        run: git diff origin/master...HEAD > pr_diff.txt
 
       # Step 3: Install Dependencies
       - name: Install Dependencies
