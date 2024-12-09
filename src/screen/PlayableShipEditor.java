@@ -85,7 +85,7 @@ public class PlayableShipEditor extends Screen {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.severe("Error loading custom ship: " + e.getMessage());
         }
     }
 
@@ -226,9 +226,9 @@ public class PlayableShipEditor extends Screen {
         }
         try {
             FileManager.getInstance().updateShipGraphics("CustomShip", spriteData.toString());
-            System.out.println("Sprite data saved successfully.");
+            logger.info("Sprite data saved successfully.");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.severe("Error saving sprite data: " + e.getMessage());
         }
     }
 
@@ -241,6 +241,6 @@ public class PlayableShipEditor extends Screen {
                 canvas[i][j] = false;
             }
         }
-        System.out.println("Canvas cleared.");
+        logger.info("Canvas cleared.");
     }
 }
