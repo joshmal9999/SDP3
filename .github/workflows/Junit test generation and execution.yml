@@ -55,12 +55,15 @@ jobs:
             -d '{
               "model": "gpt-4",
               "messages": [
-                {"role": "system", "content": "You are a Java developer. Generate a JUnit 5 test case."},
-                {"role": "user", "content": "Write a JUnit test for the following method:\n'"$METHOD"'"}
+                {"role": "system", "content": "You are a Java developer. Generate a comprehensive JUnit 5 test case."},
+                {"role": "user", "content": "Write a JUnit test for the following method:\n\n'"$METHOD"'\n\nEnsure the test includes edge case coverage and multiple assertions."}
               ]
             }')
-          
-          # Extract test code and append to test file
+    
+          # 디버깅용 응답 출력
+          echo "Raw response for method $METHOD: $RESPONSE" >> debug-response.json
+    
+          # 테스트 코드 추출
           TEST_CODE=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           if [ -z "$TEST_CODE" ] || [ "$TEST_CODE" == "null" ]; then
             echo "Invalid response for $METHOD" >> debug-response.json
@@ -68,6 +71,7 @@ jobs:
             echo "$TEST_CODE" >> app/src/test/java/org/example/AppTest.java
           fi
         done < changed-methods.txt
+
 
     # Step 6: Run the Generated Tests
     - name: Run JUnit Tests
