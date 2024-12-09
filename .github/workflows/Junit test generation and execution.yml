@@ -17,15 +17,15 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref }}
 
-    # Step 2: Fetch Main Branch
-    - name: Fetch Main Branch
-      run: git fetch origin main
+    # Step 2: Fetch Master Branch
+    - name: Fetch Master Branch
+      run: git fetch origin master
 
     # Step 3: Get Changed Java Files
     - name: Get Changed Files
       id: changed_files
       run: |
-        git diff --name-only origin/main...HEAD > changed-files.txt
+        git diff --name-only origin/master...HEAD > changed-files.txt
         cat changed-files.txt
 
     # Step 4: Extract Changed Methods
@@ -35,7 +35,7 @@ jobs:
         CHANGED_FILES=$(cat changed-files.txt | grep '\.java$')
         for FILE in $CHANGED_FILES; do
           echo "Processing $FILE"
-          git diff origin/main...HEAD -- $FILE | grep '^\+' | grep 'public ' >> changed-methods.txt || true
+          git diff origin/master...HEAD -- $FILE | grep '^\+' | grep 'public ' >> changed-methods.txt || true
         done
         cat changed-methods.txt
 
